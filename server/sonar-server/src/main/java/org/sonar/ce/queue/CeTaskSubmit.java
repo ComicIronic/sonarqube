@@ -33,12 +33,14 @@ public final class CeTaskSubmit {
   private final String type;
   private final String componentUuid;
   private final String submitterLogin;
+  private final boolean isComponent;
 
   private CeTaskSubmit(Builder builder) {
     this.uuid = Objects.requireNonNull(emptyToNull(builder.uuid));
     this.type = Objects.requireNonNull(emptyToNull(builder.type));
     this.componentUuid = emptyToNull(builder.componentUuid);
     this.submitterLogin = emptyToNull(builder.submitterLogin);
+    this.isComponent = builder.isComponent;
   }
 
   public String getType() {
@@ -64,6 +66,7 @@ public final class CeTaskSubmit {
     private String type;
     private String componentUuid;
     private String submitterLogin;
+    private boolean isComponent;
 
     public Builder(String uuid) {
       this.uuid = uuid;
@@ -85,6 +88,11 @@ public final class CeTaskSubmit {
 
     public Builder setSubmitterLogin(@Nullable String s) {
       this.submitterLogin = s;
+      return this;
+    }
+
+    public Builder setIsComponent(boolean b) {
+      this.isComponent = b;
       return this;
     }
 

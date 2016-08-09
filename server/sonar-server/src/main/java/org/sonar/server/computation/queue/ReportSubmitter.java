@@ -59,7 +59,7 @@ public class ReportSubmitter {
     this.dbClient = dbClient;
   }
 
-  public CeTask submit(String projectKey, @Nullable String projectBranch, @Nullable String projectName, InputStream reportInput) {
+  public CeTask submit(String projectKey, @Nullable String projectBranch, @Nullable String projectName, InputStream reportInput, boolean isComponent) {
     String effectiveProjectKey = ComponentKeys.createKey(projectKey, projectBranch);
     ComponentDto project = componentService.getNullableByKey(effectiveProjectKey);
     if (project == null) {
@@ -68,7 +68,7 @@ public class ReportSubmitter {
 
     userSession.checkComponentPermission(SCAN_EXECUTION, projectKey);
 
-    return submitReport(reportInput, project);
+    return submitReport(reportInput, project, isComponent);
   }
 
   @CheckForNull
@@ -93,7 +93,7 @@ public class ReportSubmitter {
     }
   }
 
-  private CeTask submitReport(InputStream reportInput, ComponentDto project) {
+  private CeTask submitReport(InputStream reportInput, ComponentDto project, boolean isComponent) {
     // the report file must be saved before submitting the task
     CeTaskSubmit.Builder submit = queue.prepareSubmit();
     try (DbSession dbSession = dbClient.openSession(false)) {
@@ -101,9 +101,10 @@ public class ReportSubmitter {
       dbSession.commit();
     }
 
-    submit.setType(CeTaskTypes.REPORT);
-    submit.setComponentUuid(project.uuid());
-    submit.setSubmitterLogin(userSession.getLogin());
+    submit.setType(CeTaskTypes.REPORT)
+      .setComponentUuid(project.uuid())
+      .setSubmitterLogin(userSession.getLogin())
+      .setIsComponent(isComponent);
     return queue.submit(submit.build());
   }
 }

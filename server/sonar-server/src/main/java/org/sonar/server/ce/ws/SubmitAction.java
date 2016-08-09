@@ -36,6 +36,7 @@ public class SubmitAction implements CeWsAction {
   public static final String PARAM_PROJECT_BRANCH = "projectBranch";
   public static final String PARAM_PROJECT_NAME = "projectName";
   public static final String PARAM_REPORT_DATA = "report";
+  public static final String PARAM_IS_COMPONENT = "isComponent";
 
   private final ReportSubmitter reportSubmitter;
 
@@ -75,6 +76,13 @@ public class SubmitAction implements CeWsAction {
       .createParam(PARAM_REPORT_DATA)
       .setRequired(true)
       .setDescription("Report file. Format is not an API, it changes among SonarQube versions.");
+
+    action
+      .createParam(PARAM_IS_COMPONENT)
+      .setRequired(false)
+      .setDescription("If the report is only a component of a whole project. Components will not delete other components on submission.")
+      .setBooleanPossibleValues()
+      .setDefaultValue("false");
   }
 
   @Override
@@ -82,10 +90,11 @@ public class SubmitAction implements CeWsAction {
     String projectKey = wsRequest.mandatoryParam(PARAM_PROJECT_KEY);
     String projectBranch = wsRequest.param(PARAM_PROJECT_BRANCH);
     String projectName = StringUtils.defaultIfBlank(wsRequest.param(PARAM_PROJECT_NAME), projectKey);
+    boolean isComponent = wsRequest.paramAsBoolean(PARAM_IS_COMPONENT);
 
     CeTask task;
     try (InputStream report = new BufferedInputStream(wsRequest.paramAsInputStream(PARAM_REPORT_DATA))) {
-      task = reportSubmitter.submit(projectKey, projectBranch, projectName, report);
+      task = reportSubmitter.submit(projectKey, projectBranch, projectName, report, isComponent);
     }
 
     WsCe.SubmitResponse submitResponse = WsCe.SubmitResponse.newBuilder()
