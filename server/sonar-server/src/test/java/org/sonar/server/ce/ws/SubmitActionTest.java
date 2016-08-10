@@ -48,7 +48,7 @@ public class SubmitActionTest {
   @Test
   public void submit_task_to_the_queue_and_ask_for_immediate_processing() {
     CeTask task = new CeTask.Builder().setUuid("TASK_1").setType(CeTaskTypes.REPORT).setComponentUuid("PROJECT_1").setSubmitterLogin("robert").build();
-    when(reportSubmitter.submit(eq("my_project"), Matchers.isNull(String.class), eq("My Project"), any(InputStream.class))).thenReturn(task);
+    when(reportSubmitter.submit(eq("my_project"), Matchers.isNull(String.class), eq("My Project"), any(InputStream.class), eq(false))).thenReturn(task);
 
     TestResponse wsResponse = tester.newRequest()
       .setParam("projectKey", "my_project")
@@ -58,7 +58,7 @@ public class SubmitActionTest {
       .setMethod("POST")
       .execute();
 
-    verify(reportSubmitter).submit(eq("my_project"), Matchers.isNull(String.class), eq("My Project"), any(InputStream.class));
+    verify(reportSubmitter).submit(eq("my_project"), Matchers.isNull(String.class), eq("My Project"), any(InputStream.class), eq(false));
 
     WsCe.SubmitResponse submitResponse = Protobuf.read(wsResponse.getInputStream(), WsCe.SubmitResponse.PARSER);
     assertThat(submitResponse.getTaskId()).isEqualTo("TASK_1");
@@ -68,7 +68,7 @@ public class SubmitActionTest {
   @Test
   public void test_example_json_response() {
     CeTask task = new CeTask.Builder().setUuid("TASK_1").setType(CeTaskTypes.REPORT).setComponentUuid("PROJECT_1").setSubmitterLogin("robert").build();
-    when(reportSubmitter.submit(eq("my_project"), Matchers.isNull(String.class), eq("My Project"), any(InputStream.class))).thenReturn(task);
+    when(reportSubmitter.submit(eq("my_project"), Matchers.isNull(String.class), eq("My Project"), any(InputStream.class), eq(false))).thenReturn(task);
 
     TestResponse wsResponse = tester.newRequest()
       .setParam("projectKey", "my_project")
@@ -87,7 +87,7 @@ public class SubmitActionTest {
   @Test
   public void project_name_is_optional() {
     CeTask task = new CeTask.Builder().setUuid("TASK_1").setType(CeTaskTypes.REPORT).setComponentUuid("PROJECT_1").setSubmitterLogin("robert").build();
-    when(reportSubmitter.submit(eq("my_project"), Matchers.isNull(String.class), eq("my_project"), any(InputStream.class))).thenReturn(task);
+    when(reportSubmitter.submit(eq("my_project"), Matchers.isNull(String.class), eq("my_project"), any(InputStream.class), eq(false))).thenReturn(task);
 
     tester.newRequest()
       .setParam("projectKey", "my_project")
@@ -96,7 +96,7 @@ public class SubmitActionTest {
       .setMethod("POST")
       .execute();
 
-    verify(reportSubmitter).submit(eq("my_project"), Matchers.isNull(String.class), eq("my_project"), any(InputStream.class));
+    verify(reportSubmitter).submit(eq("my_project"), Matchers.isNull(String.class), eq("my_project"), any(InputStream.class), eq(false));
 
   }
 }

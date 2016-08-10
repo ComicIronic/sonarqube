@@ -81,7 +81,7 @@ public class ReportSubmitterTest {
     when(queue.prepareSubmit()).thenReturn(new CeTaskSubmit.Builder(TASK_UUID));
     when(componentService.getNullableByKey(PROJECT_KEY)).thenReturn(new ComponentDto().setUuid(PROJECT_UUID));
 
-    underTest.submit(PROJECT_KEY, null, PROJECT_NAME, IOUtils.toInputStream("{binary}"));
+    underTest.submit(PROJECT_KEY, null, PROJECT_NAME, IOUtils.toInputStream("{binary}"), false);
 
     verifyReportIsPersisted(TASK_UUID);
     verifyZeroInteractions(permissionService);
@@ -109,7 +109,7 @@ public class ReportSubmitterTest {
     when(permissionService.wouldCurrentUserHavePermissionWithDefaultTemplate(any(DbSession.class), eq(SCAN_EXECUTION), anyString(), eq(PROJECT_KEY), eq(Qualifiers.PROJECT)))
       .thenReturn(true);
 
-    underTest.submit(PROJECT_KEY, null, PROJECT_NAME, IOUtils.toInputStream("{binary}"));
+    underTest.submit(PROJECT_KEY, null, PROJECT_NAME, IOUtils.toInputStream("{binary}"), false);
 
     verifyReportIsPersisted(TASK_UUID);
     verify(permissionService).applyDefaultPermissionTemplate(any(DbSession.class), eq(PROJECT_KEY));
@@ -137,7 +137,7 @@ public class ReportSubmitterTest {
     when(permissionService.wouldCurrentUserHavePermissionWithDefaultTemplate(any(DbSession.class), eq(SCAN_EXECUTION), anyString(), eq(PROJECT_KEY), eq(Qualifiers.PROJECT)))
       .thenReturn(true);
 
-    underTest.submit(PROJECT_KEY, null, PROJECT_NAME, IOUtils.toInputStream("{binary}"));
+    underTest.submit(PROJECT_KEY, null, PROJECT_NAME, IOUtils.toInputStream("{binary}"), false);
 
     verify(queue).submit(any(CeTaskSubmit.class));
   }
@@ -149,7 +149,7 @@ public class ReportSubmitterTest {
     when(queue.prepareSubmit()).thenReturn(new CeTaskSubmit.Builder(TASK_UUID));
     when(componentService.getNullableByKey(PROJECT_KEY)).thenReturn(new ComponentDto().setUuid(PROJECT_UUID));
 
-    underTest.submit(PROJECT_KEY, null, PROJECT_NAME, IOUtils.toInputStream("{binary}"));
+    underTest.submit(PROJECT_KEY, null, PROJECT_NAME, IOUtils.toInputStream("{binary}"), false);
 
     verify(queue).submit(any(CeTaskSubmit.class));
   }
@@ -161,7 +161,7 @@ public class ReportSubmitterTest {
     when(queue.prepareSubmit()).thenReturn(new CeTaskSubmit.Builder(TASK_UUID));
     when(componentService.getNullableByKey(PROJECT_KEY)).thenReturn(new ComponentDto().setUuid(PROJECT_UUID));
 
-    underTest.submit(PROJECT_KEY, null, PROJECT_NAME, IOUtils.toInputStream("{binary}"));
+    underTest.submit(PROJECT_KEY, null, PROJECT_NAME, IOUtils.toInputStream("{binary}"), false);
 
     verify(queue).submit(any(CeTaskSubmit.class));
   }
@@ -171,7 +171,7 @@ public class ReportSubmitterTest {
     userSession.setGlobalPermissions(GlobalPermissions.DASHBOARD_SHARING);
 
     thrown.expect(ForbiddenException.class);
-    underTest.submit(PROJECT_KEY, null, PROJECT_NAME, IOUtils.toInputStream("{binary}"));
+    underTest.submit(PROJECT_KEY, null, PROJECT_NAME, IOUtils.toInputStream("{binary}"), false);
   }
 
   @Test
@@ -183,7 +183,7 @@ public class ReportSubmitterTest {
     when(componentService.create(any(DbSession.class), any(NewComponent.class))).thenReturn(new ComponentDto().setUuid(PROJECT_UUID).setKey(PROJECT_KEY));
 
     thrown.expect(ForbiddenException.class);
-    underTest.submit(PROJECT_KEY, null, PROJECT_NAME, IOUtils.toInputStream("{binary}"));
+    underTest.submit(PROJECT_KEY, null, PROJECT_NAME, IOUtils.toInputStream("{binary}"), false);
   }
 
   private void verifyReportIsPersisted(String taskUuid) {
